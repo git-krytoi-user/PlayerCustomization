@@ -1,0 +1,6 @@
+name: PlayerCustomization
+version: '1.0-SNAPSHOT'
+main: dev.r1nex.playercustomization.PlayerCustomization
+api-version: '1.16'
+commands:
+  tags: {}

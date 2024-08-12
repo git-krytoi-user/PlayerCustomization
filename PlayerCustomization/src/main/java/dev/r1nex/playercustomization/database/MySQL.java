@@ -66,14 +66,22 @@ public class MySQL {
     }
 
     public void insertPlayerTag(UUID whereUuid, String tagName) {
-        try (Connection connection = connection()) {
-            String query = "INSERT INTO tags (uuid, tag_name) VALUES (?, ?)";
-            try (PreparedStatement ps = connection.prepareStatement(query)) {
-                ps.setString(1, whereUuid.toString());
-                ps.setString(2, tagName);
-                ps.executeUpdate();
+        CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
+            try (Connection connection = connection()) {
+                String query = "INSERT INTO tags (uuid, tag_name) VALUES (?, ?)";
+                try (PreparedStatement ps = connection.prepareStatement(query)) {
+                    ps.setString(1, whereUuid.toString());
+                    ps.setString(2, tagName);
+                    ps.executeUpdate();
+                }
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
             }
-        } catch (SQLException e) {
+        });
+
+        try {
+            future.get();
+        } catch (InterruptedException | ExecutionException e) {
             throw new RuntimeException(e);
         }
     }
